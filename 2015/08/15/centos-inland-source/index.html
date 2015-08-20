@@ -44,10 +44,10 @@
 USTC 源
 
 前期准备1、先关闭 fastestmirror1vim /etc/yum/pluginconf.d/fastestmirror.conf
-将 enable 项设置为 0，即 enable=0">
+将 enabled 项设置为 0，即 enabled">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CentOS 国内源">
-<meta property="og:url" content="http://yoursite.com/2015/08/13/centos-inland-source/index.html">
+<meta property="og:url" content="http://yoursite.com/2015/08/15/centos-inland-source/index.html">
 <meta property="og:site_name" content="红酥手，黄藤酒">
 <meta property="og:description" content="CentOS 系统默认的更新源会比较慢，本文主要介绍更新 Centos 的 yum 源为国内的源，使得我们使用 yum 下载安装系统更加的快速。
 这里只介绍本人经常使用的两个源：
@@ -56,8 +56,8 @@ USTC 源
 USTC 源
 
 前期准备1、先关闭 fastestmirror1vim /etc/yum/pluginconf.d/fastestmirror.conf
-将 enable 项设置为 0，即 enable=0">
-<meta property="og:updated_time" content="2015-08-13T11:55:13.000Z">
+将 enabled 项设置为 0，即 enabled">
+<meta property="og:updated_time" content="2015-08-19T08:38:30.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CentOS 国内源">
 <meta name="twitter:description" content="CentOS 系统默认的更新源会比较慢，本文主要介绍更新 Centos 的 yum 源为国内的源，使得我们使用 yum 下载安装系统更加的快速。
@@ -67,7 +67,7 @@ USTC 源
 USTC 源
 
 前期准备1、先关闭 fastestmirror1vim /etc/yum/pluginconf.d/fastestmirror.conf
-将 enable 项设置为 0，即 enable=0">
+将 enabled 项设置为 0，即 enabled">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -224,8 +224,8 @@ USTC 源
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-08-13T19:55:13+08:00" content="2015-08-13">
-            2015-08-13
+          <time itemprop="dateCreated" datetime="2015-08-15T14:10:21+08:00" content="2015-08-15">
+            2015-08-15
           </time>
         </span>
 
@@ -234,8 +234,20 @@ USTC 源
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/Linux系统/" itemprop="url" rel="index">
-                  <span itemprop="name">Linux系统</span>
+                <a href="/categories/CentOS/" itemprop="url" rel="index">
+                  <span itemprop="name">CentOS</span>
+                </a>
+              </span>
+
+              
+              
+                ， 
+              
+
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/CentOS/Linux/" itemprop="url" rel="index">
+                  <span itemprop="name">Linux</span>
                 </a>
               </span>
 
@@ -250,8 +262,8 @@ USTC 源
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/08/13/centos-inland-source/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/13/centos-inland-source/" itemprop="commentsCount"></span>
+              <a href="/2015/08/15/centos-inland-source/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/15/centos-inland-source/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -272,7 +284,8 @@ USTC 源
 <li>USTC 源</li>
 </ul>
 <h2 id="前期准备">前期准备</h2><p>1、先关闭 fastestmirror<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/yum/pluginconf.d/fastestmirror.conf</span><br></pre></td></tr></table></figure></p>
-<p>将 <code>enable</code> 项设置为 0，即 <code>enable=0</code></p>
+<p>将 <code>enabled</code> 项设置为 0，即 <code>enabled=0</code></p>
+<p>或通过以下命令关闭：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i <span class="string">'s/enabled=1/enabled=0/'</span> /etc/yum/pluginconf.d/fastestmirror.conf</span><br></pre></td></tr></table></figure></p>
 <p>2、备份系统默认的更新源<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/yum.repos.d</span><br><span class="line">mv CentOS-Base.repo&#123;,.bak&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="源替换">源替换</h2><h3 id="163_源">163 源</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/yum.repos.d</span><br><span class="line">wget http://mirrors.<span class="number">163</span>.com/.help/CentOS6-Base-<span class="number">163</span>.repo -O CentOS-Base.repo</span><br></pre></td></tr></table></figure>
 <p>注意：如果是centos 5.x ，则将第二行的 CentOS<code>6</code> 改为 CentOS<code>5</code>。</p>
@@ -300,6 +313,18 @@ USTC 源
       
 
       
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/17/ceph-delpoy-on-centos6-1/" rel="prev">CentOS 6.6 上部署 Ceph 集群(一)</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+        </div>
+      
 
       
       
@@ -310,10 +335,10 @@ USTC 源
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2015/08/13/centos-inland-source/"
+        <div class="ds-share flat" data-thread-key="2015/08/15/centos-inland-source/"
      data-title="CentOS 国内源"
      data-content=""
-     data-url="http://yoursite.com/2015/08/13/centos-inland-source/">
+     data-url="http://yoursite.com/2015/08/15/centos-inland-source/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -339,8 +364,8 @@ USTC 源
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/08/13/centos-inland-source/"
-                   data-title="CentOS 国内源" data-url="http://yoursite.com/2015/08/13/centos-inland-source/">
+              <div class="ds-thread" data-thread-key="2015/08/15/centos-inland-source/"
+                   data-title="CentOS 国内源" data-url="http://yoursite.com/2015/08/15/centos-inland-source/">
               </div>
             
           </div>
@@ -380,21 +405,21 @@ USTC 源
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">分类</span>
               
           </div>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>

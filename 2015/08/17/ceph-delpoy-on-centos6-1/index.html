@@ -1,0 +1,790 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+    <meta name="description" content="食尽鸟投林，落了片白茫茫大地真干净" />
+
+
+
+  <meta name="keywords" content="Ceph," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="环境
+System_version: Centos 6.6
+Ceph_release: v0.94.2 Hammer
+最小化集群：一个 ceph-deploy 管理节点、以及三个 Ceph 节点（或虚拟机），以此构成 Ceph 存储集群。一旦这个集群达到 active + clean 状态, 通过增加第三个Ceph OSD 守护进程，一个元数据服务器(mds)和另外两个Ceph监控器(mon)来扩">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS 6.6 上部署 Ceph 集群(一)">
+<meta property="og:url" content="http://yoursite.com/2015/08/17/ceph-delpoy-on-centos6-1/index.html">
+<meta property="og:site_name" content="红酥手，黄藤酒">
+<meta property="og:description" content="环境
+System_version: Centos 6.6
+Ceph_release: v0.94.2 Hammer
+最小化集群：一个 ceph-deploy 管理节点、以及三个 Ceph 节点（或虚拟机），以此构成 Ceph 存储集群。一旦这个集群达到 active + clean 状态, 通过增加第三个Ceph OSD 守护进程，一个元数据服务器(mds)和另外两个Ceph监控器(mon)来扩">
+<meta property="og:updated_time" content="2015-08-20T06:28:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CentOS 6.6 上部署 Ceph 集群(一)">
+<meta name="twitter:description" content="环境
+System_version: Centos 6.6
+Ceph_release: v0.94.2 Hammer
+最小化集群：一个 ceph-deploy 管理节点、以及三个 Ceph 节点（或虚拟机），以此构成 Ceph 存储集群。一旦这个集群达到 active + clean 状态, 通过增加第三个Ceph OSD 守护进程，一个元数据服务器(mds)和另外两个Ceph监控器(mon)来扩">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+  <title> CentOS 6.6 上部署 Ceph 集群(一) | 红酥手，黄藤酒 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?03ea65f9fcf785e3f19256eabd19dbd9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">红酥手，黄藤酒</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-next-home"></i> <br />
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-next-about"></i> <br />
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', '25PC1WS4kwCh3BNRyedV','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              CentOS 6.6 上部署 Ceph 集群(一)
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-08-17T15:59:31+08:00" content="2015-08-17">
+            2015-08-17
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/Ceph/" itemprop="url" rel="index">
+                  <span itemprop="name">Ceph</span>
+                </a>
+              </span>
+
+              
+              
+                ， 
+              
+
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/Ceph/Linux/" itemprop="url" rel="index">
+                  <span itemprop="name">Linux</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/08/17/ceph-delpoy-on-centos6-1/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/17/ceph-delpoy-on-centos6-1/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h2 id="环境">环境</h2><ul>
+<li>System_version: Centos 6.6</li>
+<li>Ceph_release: v0.94.2 Hammer</li>
+<li>最小化集群：一个 ceph-deploy 管理节点、以及三个 Ceph 节点（或虚拟机），以此构成 Ceph 存储集群。一旦这个集群达到 <code>active + clean</code> 状态, 通过增加第三个Ceph OSD 守护进程，一个元数据服务器(mds)和另外两个Ceph监控器(mon)来扩展它。</li>
+<li>节点列表：<ul>
+<li>admin-node(ceph-deploy)   192.168.1.100</li>
+<li>node1(mon.1)    192.168.1.101</li>
+<li>node2(osd.0)    192.168.1.102</li>
+<li>node3(osd.1)    192.168.1.103</li>
+</ul>
+</li>
+</ul>
+<h2 id="系统预检">系统预检</h2><font color="orange">说明：以下操作在<strong>每个节点</strong>上都执行</font>
+
+<h3 id="1-修改_yum_源为_USTC_源">1.修改 yum 源为 USTC 源</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/yum.repos.d</span><br><span class="line">mv CentOS-Base.repo&#123;,.bak&#125;</span><br><span class="line">wget https://lug.ustc.edu.cn/wiki/_<span class="built_in">export</span>/code/mirrors/<span class="built_in">help</span>/centos?codeblock=<span class="number">2</span> -O CentOS-Base.repo</span><br></pre></td></tr></table></figure>
+<h3 id="2-关闭_fastestmirror">2.关闭 fastestmirror</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i <span class="string">'s/enabled=1/enabled=0/'</span> /etc/yum/pluginconf.d/fastestmirror.conf</span><br></pre></td></tr></table></figure>
+<h3 id="3-添加_ceph_更新源">3.添加 ceph 更新源</h3><p>在 <code>/etc/yum.repos.d/</code> 目录下新建 <code>ceph.repo</code> 文件，并添加以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ceph-noarch]</span><br><span class="line">name=Ceph noarch packages</span><br><span class="line">baseurl=http://ceph.com/rpm-hammer/el6/noarch</span><br><span class="line">enabled=<span class="number">1</span></span><br><span class="line">gpgcheck=<span class="number">1</span></span><br><span class="line"><span class="built_in">type</span>=rpm-md</span><br><span class="line">gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc</span><br></pre></td></tr></table></figure>
+<p>说明：这里 <code>baseurl</code> 项是可以按自己情况更改的，官网的例子是 baseurl=<code>http://ceph.com/rpm-{ceph-release}/{distro}/noarch</code>。因为我们使用的 release 是 <code>hammer</code>，并且系统使用的是 <code>centos 6.6</code>，所以 <code>baseurl</code> 项应该是上面的样子。<br>补充：<code>{distro}</code> 相对应的分别是 Red Hat （rhel6、rhel7）、CentOS （el6、el7）和 Fedora 19-21（f19-f21）</p>
+<h3 id="4-生成缓存">4.生成缓存</h3><p>执行以下命令，重新生成缓存<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum makecache</span><br></pre></td></tr></table></figure></p>
+<h2 id="安装前准备">安装前准备</h2><h3 id="1-Ceph_部署工具的安装">1.Ceph 部署工具的安装</h3><p>在管理节点 <code>admin-node</code> 上安装部署工具 <code>ceph-deploy</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y ceph-deploy</span><br></pre></td></tr></table></figure>
+<h3 id="2-Ceph_节点安装前准备">2.Ceph 节点安装前准备</h3><p>你的管理节点必须能够通过 SSH 无密码地访问各 Ceph 节点。如果 ceph-deploy 以某个普通用户登录，那么这个用户必须有无密码使用 sudo 的权限。</p>
+<h4 id="2-1_修改_hostname">2.1 修改 hostname</h4><p><code>vim /etc/sysconfig/network</code>，修改 hostname:<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="setting">NETWORKING=<span class="value"><span class="keyword">yes</span></span></span></span><br><span class="line"><span class="setting">HOSTNAME=<span class="value">admin-node</span></span></span><br></pre></td></tr></table></figure></p>
+<p>其他机器的 hostname 依次改成 node1，node2，node3。<font color="red">重启后生效</font>。</p>
+<h4 id="2-2_安装_NTP">2.2 安装 NTP</h4><p>把 NTP 服务安装到所有 Ceph 节点上（特别是 Ceph 监视器节点），以免因时钟漂移导致故障。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install ntp ntpdate</span><br><span class="line">service ntpd restart</span><br></pre></td></tr></table></figure></p>
+<p>确保在各 Ceph 节点上启动了 NTP 服务，并且要使用同一个 NTP 服务器，详情见 <a href="http://www.ntp.org/" target="_blank" rel="external">NTP</a> 。并每 10 分钟同步一次时钟，通过 <code>crontab -l</code> 会看到如下信息：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/<span class="number">10</span> * * * * /usr/sbin/ntpdate clock.isc.org; hwclock -w</span><br></pre></td></tr></table></figure></p>
+<h4 id="2-3_新建_ceph_用户">2.3 新建 ceph 用户</h4><p>管理节点 <code>admin-node</code> 需要可以无密码 ssh 访问其他节点，并且 ssh 的用户必须拥有 sudo 权限。</p>
+<font color="orange">说明：以下操作在<strong>每个节点</strong>上都执行</font>
+
+<p>☞ 添加新用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">useradd <span class="operator">-d</span> /home/ceph -m ceph</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'ceph'</span> | passwd --stdin ceph</span><br></pre></td></tr></table></figure></p>
+<p>☞ 为创建的用户添加 sudo 权限<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"ceph ALL = (root) NOPASSWD:ALL"</span> | tee /etc/sudoers.d/ceph</span><br><span class="line">chmod <span class="number">0440</span> /etc/sudoers.d/ceph</span><br></pre></td></tr></table></figure></p>
+<h4 id="2-4_允许无密码_ssh_登录">2.4 允许无密码 ssh 登录</h4><font color="orange">切换到 ceph 用户</font>，生成 ssh 密钥对，并将公钥添加到其他节点的 ceph 用户信任公钥里。<br><br>☞ 在新建密钥对的时候，密码留空。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen</span><br><span class="line"></span><br><span class="line">Generating public/private key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/home/ceph/.ssh/id_rsa): </span><br><span class="line">Created directory <span class="string">'/home/ceph/.ssh'</span>.</span><br><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved <span class="keyword">in</span> /home/ceph/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved <span class="keyword">in</span> /home/ceph/.ssh/id_rsa.pub.</span><br></pre></td></tr></table></figure><br><br>☞ 把公钥拷贝到各 Ceph 节点<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-copy-id ceph@node1</span><br><span class="line">$ ssh-copy-id ceph@node2</span><br><span class="line">$ ssh-copy-id ceph@node3</span><br></pre></td></tr></table></figure><br><br>☞ (<font color="blue">推荐做法</font>)修改 <code>ceph-deploy</code> 管理节点上的 <code>~/.ssh/config</code> 文件，这样 <code>ceph-deploy</code> 就能用你所建的用户名登录 Ceph 节点了，无需每次执行 <code>ceph-deploy</code> 都指定 <code>--username ceph</code> 。这样做同时也简化了 ssh 和 scp 的用法。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.ssh/config</span><br><span class="line">Host node1</span><br><span class="line">   Hostname node1</span><br><span class="line">   User ceph</span><br><span class="line">Host node2</span><br><span class="line">   Hostname node2</span><br><span class="line">   User ceph</span><br><span class="line">Host node3</span><br><span class="line">   Hostname node3</span><br><span class="line">   User ceph</span><br></pre></td></tr></table></figure><br><br>将权限设置为 <code>0600</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod <span class="number">0600</span> ~/.ssh/config</span><br></pre></td></tr></table></figure><br><br>#### 2.5 确保联通性<br><br>☞  添加IP/主机名到管理节点 <code>admin-node</code> 的 <code>hosts</code> 文件，解决掉可能存在的主机名解析问题。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/hosts</span><br><span class="line">...</span><br><span class="line"><span class="number">192.168</span>.<span class="number">1.100</span> admin-node</span><br><span class="line"><span class="number">192.168</span>.<span class="number">1.101</span> node1</span><br><span class="line"><span class="number">192.168</span>.<span class="number">1.102</span> node2</span><br><span class="line"><span class="number">192.168</span>.<span class="number">1.103</span> node3</span><br></pre></td></tr></table></figure><br><br>☞  配置防火墙，直接 <code>service iptables stop</code> 或打开所需端口，monitor 节点需要 <code>6789</code> 端口，osd 节点需要 <code>6800:7000</code> 这个范围内的端口通信。详见<a href="http://ceph.com/docs/master/rados/configuration/network-config-ref" target="_blank" rel="external">网络配置参考</a>。若用 <code>iptables</code> 命令，要放通 Ceph 监视器所用的 6789 端口和 OSD 所用的 6800:7100 端口范围，命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## monitor</span></span><br><span class="line">sudo iptables -A INPUT -i &#123;iface&#125; -p tcp <span class="operator">-s</span> &#123;ip-address&#125;/&#123;netmask&#125; --dport <span class="number">6789</span> -j ACCEPT</span><br><span class="line"></span><br><span class="line"><span class="comment">## osd</span></span><br><span class="line">sudo iptables -A INPUT -i &#123;iface&#125; -m multiport -p tcp <span class="operator">-s</span> &#123;ip-address&#125;/&#123;netmask&#125; --dports <span class="number">6800</span>:<span class="number">7300</span> -j ACCEPT</span><br></pre></td></tr></table></figure><br><br>#### 2.6 终端(TTY)<br><br><font color="orange">说明：以下操作在<strong>每个节点</strong>上都执行</font>
+
+<p>在 CentOS 和 RHEL 上执行 ceph-deploy 命令时，如果你的 Ceph 节点默认设置了 requiretty 那就会遇到报错。可以这样禁用它，执行 sudo visudo ，找到 <code>Defaults requiretty</code> 选项，把它改为 <code>Defaults:ceph !requiretty</code> 或者干脆注释掉，这样 ceph-deploy 就可以用之前创建的用户（ 创建 Ceph 用户 ）连接了。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Defaults    requiretty</span></span><br><span class="line">Defaults:ceph    !requiretty</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>注意：编辑配置文件 /etc/sudoers 时，必须用 sudo visudo 而不是文本编辑器。</p>
+</blockquote>
+<h4 id="2-7_关闭SELinux">2.7 关闭SELinux</h4><font color="orange">说明：以下操作在<strong>每个节点</strong>上都执行</font>
+
+<p>在 CentOS 和 RHEL 上， SELinux 默认开启为 Enforcing 。为简化安装，我们建议把 SELinux 设置为 Permissive 或者完全禁用，也就是在加固系统配置前先确保集群的安装、配置没问题。用下列命令把 SELinux 设置为 Permissive ：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setenforce <span class="number">0</span></span><br></pre></td></tr></table></figure></p>
+<p>要使 SELinux 配置永久生效（如果它确是问题根源），需修改其配置文件 /etc/selinux/config<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i <span class="string">'s/SELINUX=enforcing/SELINUX=disabled/'</span> /etc/selinux/config</span><br></pre></td></tr></table></figure></p>
+<h2 id="安装">安装</h2><h3 id="1-创建集群文件夹">1.创建集群文件夹</h3><p>在管理节点上创建一个目录，用于保存 <code>ceph-deploy</code> 生成的配置文件和密钥对。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir my-cluster</span><br><span class="line">$ <span class="built_in">cd</span> my-cluster</span><br></pre></td></tr></table></figure></p>
+<p><code>ceph-deploy</code> 会把文件输出到当前目录，所以执行的时候要先进入此目录。</p>
+<p>如果以前有安装过ceph，或在安装过程出错需要重新安装时，请用以下的命令清除之前的安装信息:<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>ceph-deploy purgedata &#123;ceph-node&#125; [&#123;ceph-node&#125;]</span><br><span class="line"><span class="variable">$ </span>ceph-deploy forgetkeys</span><br></pre></td></tr></table></figure></p>
+<p>也可以用以下命令来清除指定节点上的 ceph 包<br><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy purge <span class="list">&#123;ceph-node&#125;</span> [<span class="list">&#123;ceph-node&#125;</span>]</span><br></pre></td></tr></table></figure></p>
+<p>如果执行了 purge ，你必须重新安装 Ceph 。</p>
+<h3 id="2-创建集群">2.创建集群</h3><p>☞  a.配置mon节点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy new node1</span><br></pre></td></tr></table></figure>
+<p>执行完上面的命令后，用 ls 和 cat 检查 ceph-deploy 的输出，应该有一个 Ceph 配置文件 <code>ceph.conf</code>、一个监视器密钥环 <code>ceph.mon.keyring</code>、和一个日志文件 <code>ceph.log</code>。详情见 <a href="http://docs.ceph.com/docs/master/rados/deployment/ceph-deploy-new" target="_blank" rel="external">ceph-deploy new -h</a> 。</p>
+<p>☞  b.修改 <code>ceph.conf</code> 配置<br>把 Ceph 配置文件里的默认副本数从 3 改成 2 ，这样只有两个 OSD 也可以达到 <code>active + clean</code> 状态。在 <code>[global]</code> 加入 <code>osd pool default size = 2</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ervice_required = cephx</span><br><span class="line">filestore_xattr_use_omap = <span class="literal">true</span></span><br><span class="line">auth_client_required = cephx</span><br><span class="line">auth_cluster_required = cephx</span><br><span class="line">mon_host = <span class="number">192.168</span>.<span class="number">1.101</span></span><br><span class="line">mon_initial_members = node1</span><br><span class="line">fsid = fb232035-<span class="number">5</span>cb8-<span class="number">4</span>a58-aa8f-b304288e845d</span><br><span class="line">osd pool default size = <span class="number">2</span></span><br></pre></td></tr></table></figure></p>
+<p>☞  c.安装 ceph<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy install admin-node node1 node2 node3</span><br></pre></td></tr></table></figure></p>
+<p>在安装过程中，如果出现超时错误，可以到各个节点上以 <code>ceph</code> 用户手动执行 <code>sudo yum install ceph</code>。</p>
+<p>☞  d.初始化节点<br>初始化监控节点，并收集 key<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy mon create-initial</span><br></pre></td></tr></table></figure></p>
+<p>执行完这一步后，在 <code>my-cluster</code> 目录下会生成三个文件，分别是：</p>
+<ul>
+<li>ceph.client.admin.keyring</li>
+<li>ceph.bootstrap-osd.keyring</li>
+<li>ceph.bootstrap-mds.keyring</li>
+</ul>
+<h2 id="配置激活">配置激活</h2><h3 id="添加_OSD">添加 OSD</h3><p>这边使用目录而非整个硬盘用于 OSD 进程。关于单独把硬盘或分区用于 OSD 及其日志，请参考 <a href="http://docs.ceph.com/docs/master/rados/deployment/ceph-deploy-osd" target="_blank" rel="external">ceph-deploy osd</a> 。登录到 Ceph 节点、并给 OSD 守护进程创建一目录。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ ssh node2</span><br><span class="line">$ sudo mkdir /var/<span class="built_in">local</span>/osd0</span><br><span class="line">$ <span class="built_in">exit</span></span><br><span class="line"></span><br><span class="line">$ ssh node3</span><br><span class="line">$ sudo mkdir /var/<span class="built_in">local</span>/osd1</span><br><span class="line">$ <span class="built_in">exit</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="配置_OSD">配置 OSD</h3><p>然后，从管理节点执行 ceph-deploy 来配置 OSD 。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy osd prepare node2:/var/<span class="built_in">local</span>/osd0 node3:/var/<span class="built_in">local</span>/osd1</span><br></pre></td></tr></table></figure></p>
+<p>看到如下结果，说明 osd 配置完成<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">... <span class="comment">## 省略</span></span><br><span class="line">[ceph_deploy.osd][DEBUG ] Host node2 is now ready <span class="keyword">for</span> osd use.</span><br><span class="line">... <span class="comment">## 省略</span></span><br><span class="line">[ceph_deploy.osd][DEBUG ] Host node3 is now ready <span class="keyword">for</span> osd use.</span><br></pre></td></tr></table></figure></p>
+<h3 id="激活_OSD">激活 OSD</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy osd activate node2:/var/<span class="built_in">local</span>/osd0 node3:/var/<span class="built_in">local</span>/osd1</span><br></pre></td></tr></table></figure>
+<p>返回结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">... <span class="comment">## 省略</span></span><br><span class="line">[node2][INFO  ] checking OSD status...</span><br><span class="line">[node2][INFO  ] Running <span class="built_in">command</span>: sudo ceph --cluster=ceph osd <span class="built_in">stat</span> --format=json</span><br><span class="line">[node2][INFO  ] Running <span class="built_in">command</span>: sudo chkconfig ceph on</span><br><span class="line">...</span><br><span class="line">... <span class="comment">## 省略</span></span><br><span class="line">[node3][INFO  ] checking OSD status...</span><br><span class="line">[node3][INFO  ] Running <span class="built_in">command</span>: sudo ceph --cluster=ceph osd <span class="built_in">stat</span> --format=json</span><br><span class="line">[node3][INFO  ] Running <span class="built_in">command</span>: sudo chkconfig ceph on</span><br></pre></td></tr></table></figure></p>
+<h3 id="复制配置文件">复制配置文件</h3><p>用 <code>ceph-deploy</code> 把配置文件和 admin 密钥拷贝到管理节点和 Ceph 节点，这样你每次执行 Ceph 命令行时就无需指定监视器地址和 <code>ceph.client.admin.keyring</code> 了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy admin admin-node node1 node2 node3</span><br></pre></td></tr></table></figure>
+<p>☞  给 <code>ceph.client.admin.keyring</code> 文件读权限<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo chmod +r /etc/ceph/ceph.client.admin.keyring</span><br></pre></td></tr></table></figure></p>
+<p>☞  检查集群健康状况<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph health</span><br></pre></td></tr></table></figure></p>
+<p>返回结果:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEALTH_OK</span><br></pre></td></tr></table></figure></p>
+<p>或用 <code>ceph status</code> 来查看集群的状态<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ceph status</span><br><span class="line">    cluster <span class="number">258591</span>ac-<span class="number">5</span>f7f-<span class="number">4</span>eb4-<span class="number">9</span>d6a-<span class="number">382</span>f1c5de2a9</span><br><span class="line">     health HEALTH_OK</span><br><span class="line">     monmap e1: <span class="number">1</span> mons at &#123;ceph_node1=<span class="number">192.168</span>.<span class="number">1.101</span>:<span class="number">6789</span>/<span class="number">0</span>&#125;, election epoch <span class="number">2</span>, quorum <span class="number">0</span> ceph_node1</span><br><span class="line">     osdmap e9: <span class="number">2</span> osds: <span class="number">2</span> up, <span class="number">2</span> <span class="keyword">in</span></span><br><span class="line">      pgmap v24: <span class="number">64</span> pgs, <span class="number">1</span> pools, <span class="number">0</span> bytes data, <span class="number">0</span> objects</span><br><span class="line">            <span class="number">12482</span> MB used, <span class="number">848</span> GB / <span class="number">906</span> GB avail</span><br><span class="line">                  <span class="number">64</span> active+clean</span><br></pre></td></tr></table></figure></p>
+<p>这里看到 <code>active+clean</code> 状态，说明集群 OK。</p>
+<h2 id="参考">参考</h2><ol>
+<li><a href="http://docs.ceph.com/docs/master/start/quick-ceph-deploy/" target="_blank" rel="external">http://docs.ceph.com/docs/master/start/quick-ceph-deploy/</a></li>
+</ol>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Ceph/" rel="tag">#Ceph</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/19/ceph-delpoy-on-centos6-2/" rel="prev">CentOS 6.6 上部署 Ceph 集群(二)</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/15/centos-inland-source/" rel="next">CentOS 国内源</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/08/17/ceph-delpoy-on-centos6-1/"
+     data-title="CentOS 6.6 上部署 Ceph 集群(一)"
+     data-content=""
+     data-url="http://yoursite.com/2015/08/17/ceph-delpoy-on-centos6-1/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+              <div class="ds-thread" data-thread-key="2015/08/17/ceph-delpoy-on-centos6-1/"
+                   data-title="CentOS 6.6 上部署 Ceph 集群(一)" data-url="http://yoursite.com/2015/08/17/ceph-delpoy-on-centos6-1/">
+              </div>
+            
+          </div>
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.jpg" alt="Ugo5" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">Ugo5</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">食尽鸟投林，落了片白茫茫大地真干净</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ugo5" target="_blank">github</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/stophw" target="_blank">weibo</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/users/da732ae5c4ee" target="_blank">jianshu</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://music.163.com/#/user/home?id=32890804" target="_blank">music163</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境"><span class="nav-number">1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统预检"><span class="nav-number">2.</span> <span class="nav-text">系统预检</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-修改_yum_源为_USTC_源"><span class="nav-number">2.1.</span> <span class="nav-text">1.修改 yum 源为 USTC 源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-关闭_fastestmirror"><span class="nav-number">2.2.</span> <span class="nav-text">2.关闭 fastestmirror</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-添加_ceph_更新源"><span class="nav-number">2.3.</span> <span class="nav-text">3.添加 ceph 更新源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-生成缓存"><span class="nav-number">2.4.</span> <span class="nav-text">4.生成缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装前准备"><span class="nav-number">3.</span> <span class="nav-text">安装前准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Ceph_部署工具的安装"><span class="nav-number">3.1.</span> <span class="nav-text">1.Ceph 部署工具的安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Ceph_节点安装前准备"><span class="nav-number">3.2.</span> <span class="nav-text">2.Ceph 节点安装前准备</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1_修改_hostname"><span class="nav-number">3.2.1.</span> <span class="nav-text">2.1 修改 hostname</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2_安装_NTP"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.2 安装 NTP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3_新建_ceph_用户"><span class="nav-number">3.2.3.</span> <span class="nav-text">2.3 新建 ceph 用户</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4_允许无密码_ssh_登录"><span class="nav-number">3.2.4.</span> <span class="nav-text">2.4 允许无密码 ssh 登录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-7_关闭SELinux"><span class="nav-number">3.2.5.</span> <span class="nav-text">2.7 关闭SELinux</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">4.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-创建集群文件夹"><span class="nav-number">4.1.</span> <span class="nav-text">1.创建集群文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-创建集群"><span class="nav-number">4.2.</span> <span class="nav-text">2.创建集群</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置激活"><span class="nav-number">5.</span> <span class="nav-text">配置激活</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_OSD"><span class="nav-number">5.1.</span> <span class="nav-text">添加 OSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置_OSD"><span class="nav-number">5.2.</span> <span class="nav-text">配置 OSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#激活_OSD"><span class="nav-number">5.3.</span> <span class="nav-text">激活 OSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复制配置文件"><span class="nav-number">5.4.</span> <span class="nav-text">复制配置文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2015</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ugo5</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ugo5"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+  	<script src="/js/ua-parser.min.js"></script>
+  	<script src="/js/hook-duoshuo.js"></script>
+  
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.1" id="motion.global"></script>
+
+
+
+
+  <script type="text/javascript" src="/js/nav-toggle.js?v=0.4.5.1"></script>
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+      if (isMobile()) {
+        FastClick.attach(document.body);
+      }
+    });
+  </script>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>
