@@ -53,7 +53,7 @@ node4(osd.2)  192.168.1.104
 node4(osd.2)  192.168.1.104
 
 同样，按照上一篇的系统预检，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好ipta">
-<meta property="og:updated_time" content="2015-08-20T06:52:51.000Z">
+<meta property="og:updated_time" content="2015-08-20T08:37:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CentOS 6.6 上部署 Ceph 集群(二)">
 <meta name="twitter:description" content="接着上一篇，我们继续来扩展 ceph 集群。
@@ -282,10 +282,10 @@ node4(osd.2)  192.168.1.104
 <p>☞ 3.准备并激活 osd 节点<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy osd prepare node4:/var/<span class="built_in">local</span>/osd2</span><br><span class="line">$ ceph-deploy osd activate node4:/var/<span class="built_in">local</span>/osd2</span><br></pre></td></tr></table></figure></p>
 <p>☞ 4.复制配置文件和 admin key<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy admin node4</span><br></pre></td></tr></table></figure></p>
 <p>☞ 5.查看集群状态<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ceph status</span><br></pre></td></tr></table></figure></p>
-<h3 id="添加_mds">添加 mds</h3><p>至少有一个元数据服务器才能使用 CephFS ，执行下列命令创建元数据服务器：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy mds create node1</span><br></pre></td></tr></table></figure></p>
+<h3 id="添加_MDS">添加 MDS</h3><p>至少有一个元数据服务器才能使用 CephFS ，执行下列命令创建元数据服务器：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy mds create node1</span><br></pre></td></tr></table></figure></p>
 <p>返回结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">[node1][DEBUG ] === mds.node1 ===</span><br><span class="line">[node1][DEBUG ] Starting Ceph mds.node1 on node1...</span><br><span class="line">[node1][DEBUG ] starting mds.node1 at :/<span class="number">0</span></span><br><span class="line">[node1][INFO  ] Running <span class="built_in">command</span>: sudo chkconfig ceph on</span><br></pre></td></tr></table></figure></p>
 <p>注意：需要创建好osd pools后，mds节点才会被加载并激活。</p>
-<h3 id="添加_mon">添加 mon</h3><p>Ceph 存储集群至少需要一台 Ceph 监视器。为了达到高可用性，Ceph 存储集群中通常会运行多个 Ceph 监视器，这样任意单台 Ceph 监视器的宕机都不会影响整个 Ceph 存储集群正常工作。由于 Ceph 使用 Paxos 算法，这需要多个 Ceph 监视器组成 Quoram (如1，2:3，3:4，3:5，4:6等)。</p>
+<h3 id="添加_MON">添加 MON</h3><p>Ceph 存储集群至少需要一台 Ceph 监视器。为了达到高可用性，Ceph 存储集群中通常会运行多个 Ceph 监视器，这样任意单台 Ceph 监视器的宕机都不会影响整个 Ceph 存储集群正常工作。由于 Ceph 使用 Paxos 算法，这需要多个 Ceph 监视器组成 Quoram (如1，2:3，3:4，3:5，4:6等)。</p>
 <p>Mon 的扩展比较复杂，搞不好会导致整个集群出错，所以建议开始的时候对 MON 做好规划,尽量不要对其进行修改。</p>
 <p>ceph monitor 的个数是 <strong><code>2n+1(n&gt;=0)</code>个(为奇数)</strong>，在线上至少3个，只要正常的节点数 <code>&gt;=n+1</code>，ceph 的 paxos 算法能保证系统的正常运行。所以，对于3个节点，同时只能挂掉一个。</p>
 <p>修改管理节点(admin-node)上的 ceph.conf 文件，把要添加的 MON 节点的信息追加进去,修改如下:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[global]</span><br><span class="line">fsid = <span class="number">258591</span>ac-<span class="number">5</span>f7f-<span class="number">4</span>eb4-<span class="number">9</span>d6a-<span class="number">382</span>f1c5de2a9</span><br><span class="line">mon_initial_members = node1,node2,node3</span><br><span class="line">mon_host = <span class="number">192.168</span>.<span class="number">1.101</span>,<span class="number">192.168</span>.<span class="number">1.102</span>,<span class="number">192.168</span>.<span class="number">1.103</span></span><br><span class="line">auth_cluster_required = cephx</span><br><span class="line">auth_service_required = cephx</span><br><span class="line">auth_client_required = cephx</span><br><span class="line">filestore_xattr_use_omap = <span class="literal">true</span></span><br><span class="line">osd_pool_default_size = <span class="number">2</span></span><br></pre></td></tr></table></figure></p>
@@ -313,6 +313,8 @@ node4(osd.2)  192.168.1.104
       
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/09/01/sersync-deploy-on-cenots6/" rel="prev">Sersync 实现多台服务器实时同步文件</a>
             
           </div>
 
@@ -403,21 +405,21 @@ node4(osd.2)  192.168.1.104
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">6</span>
               <span class="site-state-item-name">分类</span>
               
           </div>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -463,7 +465,7 @@ node4(osd.2)  192.168.1.104
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展集群"><span class="nav-number">1.</span> <span class="nav-text">扩展集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_OSD"><span class="nav-number">1.1.</span> <span class="nav-text">添加 OSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_mds"><span class="nav-number">1.2.</span> <span class="nav-text">添加 mds</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_mon"><span class="nav-number">1.3.</span> <span class="nav-text">添加 mon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_RGW_实例"><span class="nav-number">1.4.</span> <span class="nav-text">添加 RGW 实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展集群"><span class="nav-number">1.</span> <span class="nav-text">扩展集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_OSD"><span class="nav-number">1.1.</span> <span class="nav-text">添加 OSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_MDS"><span class="nav-number">1.2.</span> <span class="nav-text">添加 MDS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_MON"><span class="nav-number">1.3.</span> <span class="nav-text">添加 MON</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_RGW_实例"><span class="nav-number">1.4.</span> <span class="nav-text">添加 RGW 实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
