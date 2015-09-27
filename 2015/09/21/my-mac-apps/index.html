@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="Ceph," />
+  <meta name="keywords" content="Mac App," />
 
 
 
@@ -37,31 +37,85 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="接着上一篇，我们继续来扩展 ceph 集群。
-扩展集群添加 OSD首先新加一台机器，环境如 node2 和 node3，新添节点：
+<meta name="description" content="开发类
+PyCharm
 
-node4(osd.2)  192.168.1.104
+编辑类
+MacVim
+Sublime Text
+Markdown Plus
+为知笔记
 
-同样，按照上一篇的系统预检，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好ipta">
+SSH Clinet
+iTerm + zsh
+vSSH
+ZOC
+
+翻译类
+欧路词典
+
+系统类
+Moom      ## 窗口管理工具
+XtraFinder        ## Finder 的扩展
+Reginald      ## 正规测试工具
+Github Desktop
+
+画图类">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CentOS 6.6 上部署 Ceph 集群(二)">
-<meta property="og:url" content="http://yoursite.com/2015/08/19/ceph-delpoy-on-centos6-2/index.html">
+<meta property="og:title" content="Mac 下使用的 app">
+<meta property="og:url" content="http://yoursite.com/2015/09/21/my-mac-apps/index.html">
 <meta property="og:site_name" content="红酥手，黄藤酒">
-<meta property="og:description" content="接着上一篇，我们继续来扩展 ceph 集群。
-扩展集群添加 OSD首先新加一台机器，环境如 node2 和 node3，新添节点：
+<meta property="og:description" content="开发类
+PyCharm
 
-node4(osd.2)  192.168.1.104
+编辑类
+MacVim
+Sublime Text
+Markdown Plus
+为知笔记
 
-同样，按照上一篇的系统预检，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好ipta">
-<meta property="og:updated_time" content="2015-08-20T08:37:43.000Z">
+SSH Clinet
+iTerm + zsh
+vSSH
+ZOC
+
+翻译类
+欧路词典
+
+系统类
+Moom      ## 窗口管理工具
+XtraFinder        ## Finder 的扩展
+Reginald      ## 正规测试工具
+Github Desktop
+
+画图类">
+<meta property="og:updated_time" content="2015-09-21T09:20:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CentOS 6.6 上部署 Ceph 集群(二)">
-<meta name="twitter:description" content="接着上一篇，我们继续来扩展 ceph 集群。
-扩展集群添加 OSD首先新加一台机器，环境如 node2 和 node3，新添节点：
+<meta name="twitter:title" content="Mac 下使用的 app">
+<meta name="twitter:description" content="开发类
+PyCharm
 
-node4(osd.2)  192.168.1.104
+编辑类
+MacVim
+Sublime Text
+Markdown Plus
+为知笔记
 
-同样，按照上一篇的系统预检，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好ipta">
+SSH Clinet
+iTerm + zsh
+vSSH
+ZOC
+
+翻译类
+欧路词典
+
+系统类
+Moom      ## 窗口管理工具
+XtraFinder        ## Finder 的扩展
+Reginald      ## 正规测试工具
+Github Desktop
+
+画图类">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -71,7 +125,7 @@ node4(osd.2)  192.168.1.104
   };
 </script>
 
-  <title> CentOS 6.6 上部署 Ceph 集群(二) | 红酥手，黄藤酒 </title>
+  <title> Mac 下使用的 app | 红酥手，黄藤酒 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -209,7 +263,7 @@ node4(osd.2)  192.168.1.104
           
           
             
-              CentOS 6.6 上部署 Ceph 集群(二)
+              Mac 下使用的 app
             
           
         </h1>
@@ -218,8 +272,8 @@ node4(osd.2)  192.168.1.104
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-08-19T16:03:31+08:00" content="2015-08-19">
-            2015-08-19
+          <time itemprop="dateCreated" datetime="2015-09-21T16:32:37+08:00" content="2015-09-21">
+            2015-09-21
           </time>
         </span>
 
@@ -228,20 +282,8 @@ node4(osd.2)  192.168.1.104
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/Ceph/" itemprop="url" rel="index">
-                  <span itemprop="name">Ceph</span>
-                </a>
-              </span>
-
-              
-              
-                ， 
-              
-
-            
-              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/Ceph/Linux/" itemprop="url" rel="index">
-                  <span itemprop="name">Linux</span>
+                <a href="/categories/Mac-OSX/" itemprop="url" rel="index">
+                  <span itemprop="name">Mac OSX</span>
                 </a>
               </span>
 
@@ -256,8 +298,8 @@ node4(osd.2)  192.168.1.104
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/08/19/ceph-delpoy-on-centos6-2/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/19/ceph-delpoy-on-centos6-2/" itemprop="commentsCount"></span>
+              <a href="/2015/09/21/my-mac-apps/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/21/my-mac-apps/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -271,32 +313,39 @@ node4(osd.2)  192.168.1.104
       
 
       
-        <span itemprop="articleBody"><p>接着<a href="/2015/08/17/ceph-delpoy-on-centos6-1/">上一篇</a>，我们继续来扩展 ceph 集群。</p>
-<h2 id="扩展集群">扩展集群</h2><h3 id="添加_OSD">添加 OSD</h3><p>首先新加一台机器，环境如 node2 和 node3，新添节点：</p>
-<ul>
-<li>node4(osd.2)  192.168.1.104</li>
+        <span itemprop="articleBody"><h1 id="开发类">开发类</h1><ul>
+<li>PyCharm</li>
 </ul>
-<p>同样，按照<a href="/2015/08/17/ceph-delpoy-on-centos6-1/#%E7%B3%BB%E7%BB%9F%E9%A2%84%E6%A3%80">上一篇的<strong>系统预检</strong></a>，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好iptables或关闭防火墙。</p>
-<p>☞ 1.在管理节点(admin-node)上使用 <code>ceph-deploy install</code> 命令安装 ceph 到 node4<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy install node4</span><br></pre></td></tr></table></figure></p>
-<p>☞ 2.在 node4 上创建 <code>/var/local/osd2</code> 文件夹<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ssh node4</span><br><span class="line">$ sudo mkdir /var/<span class="built_in">local</span>/osd2</span><br><span class="line">$ <span class="built_in">exit</span></span><br></pre></td></tr></table></figure></p>
-<p>☞ 3.准备并激活 osd 节点<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy osd prepare node4:/var/<span class="built_in">local</span>/osd2</span><br><span class="line">$ ceph-deploy osd activate node4:/var/<span class="built_in">local</span>/osd2</span><br></pre></td></tr></table></figure></p>
-<p>☞ 4.复制配置文件和 admin key<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy admin node4</span><br></pre></td></tr></table></figure></p>
-<p>☞ 5.查看集群状态<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ceph status</span><br></pre></td></tr></table></figure></p>
-<h3 id="添加_MDS">添加 MDS</h3><p>至少有一个元数据服务器才能使用 CephFS ，执行下列命令创建元数据服务器：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy mds create node1</span><br></pre></td></tr></table></figure></p>
-<p>返回结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">[node1][DEBUG ] === mds.node1 ===</span><br><span class="line">[node1][DEBUG ] Starting Ceph mds.node1 on node1...</span><br><span class="line">[node1][DEBUG ] starting mds.node1 at :/<span class="number">0</span></span><br><span class="line">[node1][INFO  ] Running <span class="built_in">command</span>: sudo chkconfig ceph on</span><br></pre></td></tr></table></figure></p>
-<p>注意：需要创建好osd pools后，mds节点才会被加载并激活。</p>
-<h3 id="添加_MON">添加 MON</h3><p>Ceph 存储集群至少需要一台 Ceph 监视器。为了达到高可用性，Ceph 存储集群中通常会运行多个 Ceph 监视器，这样任意单台 Ceph 监视器的宕机都不会影响整个 Ceph 存储集群正常工作。由于 Ceph 使用 Paxos 算法，这需要多个 Ceph 监视器组成 Quoram (如1，2:3，3:4，3:5，4:6等)。</p>
-<p>Mon 的扩展比较复杂，搞不好会导致整个集群出错，所以建议开始的时候对 MON 做好规划,尽量不要对其进行修改。</p>
-<p>ceph monitor 的个数是 <strong><code>2n+1(n&gt;=0)</code>个(为奇数)</strong>，在线上至少3个，只要正常的节点数 <code>&gt;=n+1</code>，ceph 的 paxos 算法能保证系统的正常运行。所以，对于3个节点，同时只能挂掉一个。</p>
-<p>修改管理节点(admin-node)上的 ceph.conf 文件，把要添加的 MON 节点的信息追加进去,修改如下:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[global]</span><br><span class="line">fsid = <span class="number">258591</span>ac-<span class="number">5</span>f7f-<span class="number">4</span>eb4-<span class="number">9</span>d6a-<span class="number">382</span>f1c5de2a9</span><br><span class="line">mon_initial_members = node1,node2,node3</span><br><span class="line">mon_host = <span class="number">192.168</span>.<span class="number">1.101</span>,<span class="number">192.168</span>.<span class="number">1.102</span>,<span class="number">192.168</span>.<span class="number">1.103</span></span><br><span class="line">auth_cluster_required = cephx</span><br><span class="line">auth_service_required = cephx</span><br><span class="line">auth_client_required = cephx</span><br><span class="line">filestore_xattr_use_omap = <span class="literal">true</span></span><br><span class="line">osd_pool_default_size = <span class="number">2</span></span><br></pre></td></tr></table></figure></p>
-<p>新增两个监视器到 Ceph 集群。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy mon add node2 node3</span><br></pre></td></tr></table></figure></p>
-<p>增加 Ceph 监视器后，Ceph 将开始同步各监视器并形成 Quoram。你可通过如下方式检查 Quoram 状态：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph quorum_status --format json-pretty</span><br></pre></td></tr></table></figure></p>
-<h3 id="添加_RGW_实例">添加 RGW 实例</h3><p>为了使用 Ceph 的 <a href="http://docs.ceph.com/docs/master/glossary/#term-ceph-object-gateway" target="_blank" rel="external">Ceph Object Gateway</a> 组件，我们必须部署一个 <a href="http://docs.ceph.com/docs/master/glossary/#term-rgw" target="_blank" rel="external">RGW</a> 实例。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy rgw create node1</span><br></pre></td></tr></table></figure></p>
-<p>注意：这个是 Hammer 版本的新功能，同时在 ceph-deploy v1.5.23 版本中</p>
-<p>RGW 实例默认会监听在 <code>7480</code> 端口。你可以通过编辑节点上的 <code>ceph.conf</code> 来运行 RGW，类似于：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">rgw frontends = civetweb port <span class="number">80</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="参考">参考</h2><ol>
-<li><a href="http://docs.ceph.com/docs/master/start/quick-ceph-deploy/" target="_blank" rel="external">http://docs.ceph.com/docs/master/start/quick-ceph-deploy/</a></li>
-</ol>
+<h1 id="编辑类">编辑类</h1><ul>
+<li>MacVim</li>
+<li>Sublime Text</li>
+<li>Markdown Plus</li>
+<li>为知笔记</li>
+</ul>
+<h1 id="SSH_Clinet">SSH Clinet</h1><ul>
+<li>iTerm + zsh</li>
+<li>vSSH</li>
+<li>ZOC</li>
+</ul>
+<h1 id="翻译类">翻译类</h1><ul>
+<li>欧路词典</li>
+</ul>
+<h1 id="系统类">系统类</h1><ul>
+<li>Moom      ## 窗口管理工具</li>
+<li>XtraFinder        ## Finder 的扩展</li>
+<li>Reginald      ## 正规测试工具</li>
+<li>Github Desktop</li>
+</ul>
+<h1 id="画图类">画图类</h1><ul>
+<li>Xmind</li>
+<li>omniGraffle</li>
+<li>Graphviz</li>
+</ul>
+<h1 id="播放器">播放器</h1><ul>
+<li>Movist</li>
+<li>splayer</li>
+<li>网易云音乐</li>
+</ul>
 </span>
       
     </div>
@@ -305,7 +354,7 @@ node4(osd.2)  192.168.1.104
       
         <div class="post-tags">
           
-            <a href="/tags/Ceph/" rel="tag">#Ceph</a>
+            <a href="/tags/Mac-App/" rel="tag">#Mac App</a>
           
         </div>
       
@@ -314,13 +363,11 @@ node4(osd.2)  192.168.1.104
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/09/01/sersync-deploy-on-cenots6/" rel="prev">Sersync 实现多台服务器实时同步文件</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/08/17/ceph-delpoy-on-centos6-1/" rel="next">CentOS 6.6 上部署 Ceph 集群(一)</a>
+              <a href="/2015/09/01/sersync-deploy-on-cenots6/" rel="next">Sersync 实现多台服务器实时同步文件</a>
             
           </div>
         </div>
@@ -335,10 +382,10 @@ node4(osd.2)  192.168.1.104
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2015/08/19/ceph-delpoy-on-centos6-2/"
-     data-title="CentOS 6.6 上部署 Ceph 集群(二)"
+        <div class="ds-share flat" data-thread-key="2015/09/21/my-mac-apps/"
+     data-title="Mac 下使用的 app"
      data-content=""
-     data-url="http://yoursite.com/2015/08/19/ceph-delpoy-on-centos6-2/">
+     data-url="http://yoursite.com/2015/09/21/my-mac-apps/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -364,8 +411,8 @@ node4(osd.2)  192.168.1.104
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/08/19/ceph-delpoy-on-centos6-2/"
-                   data-title="CentOS 6.6 上部署 Ceph 集群(二)" data-url="http://yoursite.com/2015/08/19/ceph-delpoy-on-centos6-2/">
+              <div class="ds-thread" data-thread-key="2015/09/21/my-mac-apps/"
+                   data-title="Mac 下使用的 app" data-url="http://yoursite.com/2015/09/21/my-mac-apps/">
               </div>
             
           </div>
@@ -465,7 +512,7 @@ node4(osd.2)  192.168.1.104
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展集群"><span class="nav-number">1.</span> <span class="nav-text">扩展集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_OSD"><span class="nav-number">1.1.</span> <span class="nav-text">添加 OSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_MDS"><span class="nav-number">1.2.</span> <span class="nav-text">添加 MDS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_MON"><span class="nav-number">1.3.</span> <span class="nav-text">添加 MON</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_RGW_实例"><span class="nav-number">1.4.</span> <span class="nav-text">添加 RGW 实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#开发类"><span class="nav-number">1.</span> <span class="nav-text">开发类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编辑类"><span class="nav-number">2.</span> <span class="nav-text">编辑类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SSH_Clinet"><span class="nav-number">3.</span> <span class="nav-text">SSH Clinet</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#翻译类"><span class="nav-number">4.</span> <span class="nav-text">翻译类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#系统类"><span class="nav-number">5.</span> <span class="nav-text">系统类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#画图类"><span class="nav-number">6.</span> <span class="nav-text">画图类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#播放器"><span class="nav-number">7.</span> <span class="nav-text">播放器</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
