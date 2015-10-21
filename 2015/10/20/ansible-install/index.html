@@ -48,7 +48,7 @@ ansible 提供了丰富的模块来方便的完成管理任务，对于复杂的
 ansible 是一款自动化运维部署工具，与 saltstack，pupet 等不同的是，ansible 没有采用 C/S 的架构，即没有客户端与服务端之分。这也就意味着，ansible的安装更加方便，管理节点更加灵活（任何一台安装了ansible的机器都可以充当管理节点）。
 ansible 提供了丰富的模块来方便的完成管理任务，对于复杂的管理任务来说，ansible 通过编写 pl">
 <meta property="og:image" content="http://yoursite.com/images/ansible-work-mechanism.png">
-<meta property="og:updated_time" content="2015-10-20T11:09:51.000Z">
+<meta property="og:updated_time" content="2015-10-21T12:46:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ansible 的介绍及安装部署">
 <meta name="twitter:description" content="一、简单介绍
@@ -287,7 +287,7 @@ ansible 提供了丰富的模块来方便的完成管理任务，对于复杂的
 </ul>
 <h1 id="三、Ansible_安装">三、Ansible 安装</h1><hr>
 <p>你可以访问 ansible 的 github 来找到 ansible 的源码，地址：<a href="https://github.com/ansible/ansible" target="_blank" rel="external">https://github.com/ansible/ansible</a></p>
-<p>ansible 管理节点的主机要求：<br>1、python2.6 或 python2.7<br>2、管理节点暂不支持 windows 系统<br>3、适用系统包括 Red Hat，CentOS，Debian，OS X，以及 BSD 系列的系统</p>
+<p>ansible 管理节点的主机要求：<br>1、python2.6 或 python2.7<br>2、<del>管理节点暂不支持 windows 系统</del>(v1.7版本后，开始支持对 windows 系统的管理)<br>3、适用系统包括 Red Hat，CentOS，Debian，OS X，以及 BSD 系列的系统</p>
 <p>ansible 被管理节点的主机要求：<br>被管理节点需要安装 python2.4 以上的版本，但是如果 python 的版本低于 python2.5 的话需要安装依赖包 python-simplejson（试用yum方式安装即可）</p>
 <p><font color="red">注意：</font></p>
 <ol>
