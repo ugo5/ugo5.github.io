@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="Ceph," />
+  <meta name="keywords" content="Ansible," />
 
 
 
@@ -37,31 +37,23 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="接着上一篇，我们继续来扩展 ceph 集群。
-扩展集群添加 OSD首先新加一台机器，环境如 node2 和 node3，新添节点：
-
-node4(osd.2)  192.168.1.104
-
-同样，按照上一篇的系统预检，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好ipta">
+<meta name="description" content="一、简单介绍
+ansible 是一款自动化运维部署工具，与 saltstack，pupet 等不同的是，ansible 没有采用 C/S 的架构，即没有客户端与服务端之分。这也就意味着，ansible的安装更加方便，管理节点更加灵活（任何一台安装了ansible的机器都可以充当管理节点）。
+ansible 提供了丰富的模块来方便的完成管理任务，对于复杂的管理任务来说，ansible 通过编写 pl">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CentOS 6.6 上部署 Ceph 集群(二)">
-<meta property="og:url" content="http://yoursite.com/2015/08/19/ceph-delpoy-on-centos6-2/index.html">
+<meta property="og:title" content="Ansible 的介绍及安装部署">
+<meta property="og:url" content="http://yoursite.com/2015/10/20/ansible-install/index.html">
 <meta property="og:site_name" content="红酥手，黄藤酒">
-<meta property="og:description" content="接着上一篇，我们继续来扩展 ceph 集群。
-扩展集群添加 OSD首先新加一台机器，环境如 node2 和 node3，新添节点：
-
-node4(osd.2)  192.168.1.104
-
-同样，按照上一篇的系统预检，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好ipta">
-<meta property="og:updated_time" content="2015-08-20T08:37:43.000Z">
+<meta property="og:description" content="一、简单介绍
+ansible 是一款自动化运维部署工具，与 saltstack，pupet 等不同的是，ansible 没有采用 C/S 的架构，即没有客户端与服务端之分。这也就意味着，ansible的安装更加方便，管理节点更加灵活（任何一台安装了ansible的机器都可以充当管理节点）。
+ansible 提供了丰富的模块来方便的完成管理任务，对于复杂的管理任务来说，ansible 通过编写 pl">
+<meta property="og:image" content="http://yoursite.com/images/ansible-work-mechanism.png">
+<meta property="og:updated_time" content="2015-10-20T11:09:51.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CentOS 6.6 上部署 Ceph 集群(二)">
-<meta name="twitter:description" content="接着上一篇，我们继续来扩展 ceph 集群。
-扩展集群添加 OSD首先新加一台机器，环境如 node2 和 node3，新添节点：
-
-node4(osd.2)  192.168.1.104
-
-同样，按照上一篇的系统预检，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好ipta">
+<meta name="twitter:title" content="Ansible 的介绍及安装部署">
+<meta name="twitter:description" content="一、简单介绍
+ansible 是一款自动化运维部署工具，与 saltstack，pupet 等不同的是，ansible 没有采用 C/S 的架构，即没有客户端与服务端之分。这也就意味着，ansible的安装更加方便，管理节点更加灵活（任何一台安装了ansible的机器都可以充当管理节点）。
+ansible 提供了丰富的模块来方便的完成管理任务，对于复杂的管理任务来说，ansible 通过编写 pl">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -71,7 +63,7 @@ node4(osd.2)  192.168.1.104
   };
 </script>
 
-  <title> CentOS 6.6 上部署 Ceph 集群(二) | 红酥手，黄藤酒 </title>
+  <title> Ansible 的介绍及安装部署 | 红酥手，黄藤酒 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -209,7 +201,7 @@ node4(osd.2)  192.168.1.104
           
           
             
-              CentOS 6.6 上部署 Ceph 集群(二)
+              Ansible 的介绍及安装部署
             
           
         </h1>
@@ -218,8 +210,8 @@ node4(osd.2)  192.168.1.104
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-08-19T16:03:31+08:00" content="2015-08-19">
-            2015-08-19
+          <time itemprop="dateCreated" datetime="2015-10-20T16:05:16+08:00" content="2015-10-20">
+            2015-10-20
           </time>
         </span>
 
@@ -228,8 +220,8 @@ node4(osd.2)  192.168.1.104
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/Ceph/" itemprop="url" rel="index">
-                  <span itemprop="name">Ceph</span>
+                <a href="/categories/Ansible/" itemprop="url" rel="index">
+                  <span itemprop="name">Ansible</span>
                 </a>
               </span>
 
@@ -240,8 +232,8 @@ node4(osd.2)  192.168.1.104
 
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/Ceph/Linux/" itemprop="url" rel="index">
-                  <span itemprop="name">Linux</span>
+                <a href="/categories/Ansible/自动化/" itemprop="url" rel="index">
+                  <span itemprop="name">自动化</span>
                 </a>
               </span>
 
@@ -256,8 +248,8 @@ node4(osd.2)  192.168.1.104
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/08/19/ceph-delpoy-on-centos6-2/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/19/ceph-delpoy-on-centos6-2/" itemprop="commentsCount"></span>
+              <a href="/2015/10/20/ansible-install/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/20/ansible-install/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -271,32 +263,49 @@ node4(osd.2)  192.168.1.104
       
 
       
-        <span itemprop="articleBody"><p>接着<a href="/2015/08/17/ceph-delpoy-on-centos6-1/">上一篇</a>，我们继续来扩展 ceph 集群。</p>
-<h2 id="扩展集群">扩展集群</h2><h3 id="添加_OSD">添加 OSD</h3><p>首先新加一台机器，环境如 node2 和 node3，新添节点：</p>
-<ul>
-<li>node4(osd.2)  192.168.1.104</li>
-</ul>
-<p>同样，按照<a href="/2015/08/17/ceph-delpoy-on-centos6-1/#%E7%B3%BB%E7%BB%9F%E9%A2%84%E6%A3%80">上一篇的<strong>系统预检</strong></a>，添加ceph用户，修改hosts，在~/.ssh/config里添加osd、mds、mon节点信息，安装ntp服务确保集群里面的所有节点时间一致，关闭selinux，配置好iptables或关闭防火墙。</p>
-<p>☞ 1.在管理节点(admin-node)上使用 <code>ceph-deploy install</code> 命令安装 ceph 到 node4<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy install node4</span><br></pre></td></tr></table></figure></p>
-<p>☞ 2.在 node4 上创建 <code>/var/local/osd2</code> 文件夹<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ssh node4</span><br><span class="line">$ sudo mkdir /var/<span class="built_in">local</span>/osd2</span><br><span class="line">$ <span class="built_in">exit</span></span><br></pre></td></tr></table></figure></p>
-<p>☞ 3.准备并激活 osd 节点<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy osd prepare node4:/var/<span class="built_in">local</span>/osd2</span><br><span class="line">$ ceph-deploy osd activate node4:/var/<span class="built_in">local</span>/osd2</span><br></pre></td></tr></table></figure></p>
-<p>☞ 4.复制配置文件和 admin key<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy admin node4</span><br></pre></td></tr></table></figure></p>
-<p>☞ 5.查看集群状态<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ceph status</span><br></pre></td></tr></table></figure></p>
-<h3 id="添加_MDS">添加 MDS</h3><p>至少有一个元数据服务器才能使用 CephFS ，执行下列命令创建元数据服务器：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy mds create node1</span><br></pre></td></tr></table></figure></p>
-<p>返回结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">[node1][DEBUG ] === mds.node1 ===</span><br><span class="line">[node1][DEBUG ] Starting Ceph mds.node1 on node1...</span><br><span class="line">[node1][DEBUG ] starting mds.node1 at :/<span class="number">0</span></span><br><span class="line">[node1][INFO  ] Running <span class="built_in">command</span>: sudo chkconfig ceph on</span><br></pre></td></tr></table></figure></p>
-<p>注意：需要创建好osd pools后，mds节点才会被加载并激活。</p>
-<h3 id="添加_MON">添加 MON</h3><p>Ceph 存储集群至少需要一台 Ceph 监视器。为了达到高可用性，Ceph 存储集群中通常会运行多个 Ceph 监视器，这样任意单台 Ceph 监视器的宕机都不会影响整个 Ceph 存储集群正常工作。由于 Ceph 使用 Paxos 算法，这需要多个 Ceph 监视器组成 Quoram (如1，2:3，3:4，3:5，4:6等)。</p>
-<p>Mon 的扩展比较复杂，搞不好会导致整个集群出错，所以建议开始的时候对 MON 做好规划,尽量不要对其进行修改。</p>
-<p>ceph monitor 的个数是 <strong><code>2n+1(n&gt;=0)</code>个(为奇数)</strong>，在线上至少3个，只要正常的节点数 <code>&gt;=n+1</code>，ceph 的 paxos 算法能保证系统的正常运行。所以，对于3个节点，同时只能挂掉一个。</p>
-<p>修改管理节点(admin-node)上的 ceph.conf 文件，把要添加的 MON 节点的信息追加进去,修改如下:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[global]</span><br><span class="line">fsid = <span class="number">258591</span>ac-<span class="number">5</span>f7f-<span class="number">4</span>eb4-<span class="number">9</span>d6a-<span class="number">382</span>f1c5de2a9</span><br><span class="line">mon_initial_members = node1,node2,node3</span><br><span class="line">mon_host = <span class="number">192.168</span>.<span class="number">1.101</span>,<span class="number">192.168</span>.<span class="number">1.102</span>,<span class="number">192.168</span>.<span class="number">1.103</span></span><br><span class="line">auth_cluster_required = cephx</span><br><span class="line">auth_service_required = cephx</span><br><span class="line">auth_client_required = cephx</span><br><span class="line">filestore_xattr_use_omap = <span class="literal">true</span></span><br><span class="line">osd_pool_default_size = <span class="number">2</span></span><br></pre></td></tr></table></figure></p>
-<p>新增两个监视器到 Ceph 集群。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy mon add node2 node3</span><br></pre></td></tr></table></figure></p>
-<p>增加 Ceph 监视器后，Ceph 将开始同步各监视器并形成 Quoram。你可通过如下方式检查 Quoram 状态：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph quorum_status --format json-pretty</span><br></pre></td></tr></table></figure></p>
-<h3 id="添加_RGW_实例">添加 RGW 实例</h3><p>为了使用 Ceph 的 <a href="http://docs.ceph.com/docs/master/glossary/#term-ceph-object-gateway" target="_blank" rel="external">Ceph Object Gateway</a> 组件，我们必须部署一个 <a href="http://docs.ceph.com/docs/master/glossary/#term-rgw" target="_blank" rel="external">RGW</a> 实例。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ceph-deploy rgw create node1</span><br></pre></td></tr></table></figure></p>
-<p>注意：这个是 Hammer 版本的新功能，同时在 ceph-deploy v1.5.23 版本中</p>
-<p>RGW 实例默认会监听在 <code>7480</code> 端口。你可以通过编辑节点上的 <code>ceph.conf</code> 来运行 RGW，类似于：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">rgw frontends = civetweb port <span class="number">80</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="参考">参考</h2><ol>
-<li><a href="http://docs.ceph.com/docs/master/start/quick-ceph-deploy/" target="_blank" rel="external">http://docs.ceph.com/docs/master/start/quick-ceph-deploy/</a></li>
+        <span itemprop="articleBody"><h1 id="一、简单介绍">一、简单介绍</h1><hr>
+<p><a href="http://www.ansible.com/" target="_blank" rel="external">ansible</a> 是一款自动化运维部署工具，与 saltstack，pupet 等不同的是，ansible 没有采用 C/S 的架构，即没有客户端与服务端之分。这也就意味着，ansible的安装更加方便，管理节点更加灵活（任何一台安装了ansible的机器都可以充当管理节点）。</p>
+<p>ansible 提供了丰富的模块来方便的完成管理任务，对于复杂的管理任务来说，ansible 通过编写 playbook 的方式来批量执行。而且 ansible 也可以并发的执行操作，可以同时在多台机器上执行 playbook 中的各个任务。</p>
+<p>ansible是基于ssh协议来实现的，基本特性：</p>
+<ol>
+<li>no agents：不需要在被管控主机上安装任何客户端；</li>
+<li>no server：无服务器端，使用时直接运行命令即可；</li>
+<li>modules in any languages：基于模块工作，可使用任意语言开发模块；</li>
+<li>yaml，not code：使用yaml语言定制剧本playbook；</li>
+<li>ssh by default：基于SSH工作；</li>
+<li>strong multi-tier solution：可实现多级指挥。</li>
 </ol>
+<h1 id="二、工作机制">二、工作机制</h1><hr>
+<p><img src="/images/ansible-work-mechanism.png" alt="ansible mechanism"></p>
+<p>说明：</p>
+<ul>
+<li>Ansible: 核心部分</li>
+<li>Modules: 包括 Ansible 自带的核心模块及自定义模块 </li>
+<li>Plugins: 完成模块功能的补充，包括连接插件、邮件插件等 </li>
+<li>Playbooks: 网上很多翻译为剧本，个人觉得理解为编排更为合理；定义 Ansible 多任务配置文件，有 Ansible 自动执行</li>
+<li>Inventory: 定义 Ansible 管理主机的清单</li>
+</ul>
+<h1 id="三、Ansible_安装">三、Ansible 安装</h1><hr>
+<p>你可以访问 ansible 的 github 来找到 ansible 的源码，地址：<a href="https://github.com/ansible/ansible" target="_blank" rel="external">https://github.com/ansible/ansible</a></p>
+<p>ansible 管理节点的主机要求：<br>1、python2.6 或 python2.7<br>2、管理节点暂不支持 windows 系统<br>3、适用系统包括 Red Hat，CentOS，Debian，OS X，以及 BSD 系列的系统</p>
+<p>ansible 被管理节点的主机要求：<br>被管理节点需要安装 python2.4 以上的版本，但是如果 python 的版本低于 python2.5 的话需要安装依赖包 python-simplejson（试用yum方式安装即可）</p>
+<p><font color="red">注意：</font></p>
+<ol>
+<li>ansible 的 “raw” 模块和 “script” 模块不需要 <strong>python-simplejson</strong>，所以你可以使用这两个模块来安装这个文件；</li>
+<li>如果你在远程管理节点上开启了 <strong>SElinux</strong>，那么在你使用 “copy/file/template” 功能前，要安装 <strong>libselinux-python</strong> 包，你可以用 ansible 的 yum 模块来安装这个包；</li>
+<li>在默认没有安装 python2.X 而是安装了 python3.X 的系统上，你可以自己安装 python2.X 版本，然后通过设置 ansible_python_interpreter 环境变量来指定你安装的 python2.6 的路径。</li>
+</ol>
+<p>以下我们采用 yum 安装的方式来举例说明！</p>
+<h2 id="环境简介">环境简介</h2><hr>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">系统：CentOS-<span class="number">6.6</span>_x86_64  最小化安装</span><br><span class="line">yum 源：epel</span><br></pre></td></tr></table></figure>
+<h2 id="安装方式">安装方式</h2><hr>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y <span class="keyword">install</span> ansible</span><br></pre></td></tr></table></figure>
+<h1 id="四、配置简介">四、配置简介</h1><hr>
+<h2 id="配置文件">配置文件</h2><hr>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/etc/ansible/       <span class="preprocessor"># 这个目录主要是有 ansible 的配置文件跟客户端的管理配置文件</span></span><br><span class="line">	<span class="string">|</span></span><br><span class="line">	<span class="string">|_ansible.conf    # 主要参数解析，这里主要有两个需要解释的选项</span></span><br><span class="line">	<span class="string">|_hosts    # 主机配置文件</span></span><br><span class="line">	<span class="string">|_roles    # 角色目录</span></span><br><span class="line">/usr/share/ansible  <span class="preprocessor"># ansible 的模块存放目录，里面有 ansible 各个模块的文件</span></span><br></pre></td></tr></table></figure>
+<h2 id="主要配置项">主要配置项</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/etc/ansible/ansible.cfg (主要参数解析,这里主要有两个需要解释的选项)</span><br><span class="line">  library        = /usr/share/ansible  <span class="preprocessor">#指定库文件位置(就是ansible模块文件存放位置)</span></span><br><span class="line">  remote_tmp     = $HOME/.ansible/tmp  <span class="preprocessor">#客户端临时文件的路径(ansible通过ssh通道在远程主机上根据playbook生成对应的临时python代码,然后远程执行这一段临时代码,并在执行完成后删除,我们在执行的时候可以去客户端执行ps命令看到这个过程的)</span></span><br><span class="line"></span><br><span class="line">/etc/ansible/hosts  (主机配置文件)</span><br><span class="line">  文件的配置格式为</span><br><span class="line">  [definename]</span><br><span class="line">  host or hostname</span><br><span class="line"></span><br><span class="line">  <span class="preprocessor">#在定义主机的时候,主要需要注意的有</span></span><br><span class="line">  <span class="number">1</span>) 要以主机名定义客户机的时候要保证server端能够正确的解析这个主机名;</span><br><span class="line">  <span class="number">2</span>) 主机定义的时候可以有很多匹配规则,如web-[a-z].host.com,db-[<span class="number">01</span>:<span class="number">30</span>].host.com;</span><br></pre></td></tr></table></figure>
+<h1 id="五、常用命令">五、常用命令</h1><hr>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 命令格式:</span></span><br><span class="line">ansible <span class="variable">&lt;pattern_goes_here&gt;</span> -m <span class="variable">&lt;module_name&gt;</span> -a <span class="variable">&lt;arguments&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 例如:</span></span><br><span class="line">ansible all -m copy -a 'src=/etc/my.cnf dest=/etc/'</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 几个重要参数的含义:</span></span><br><span class="line">-i    <span class="comment"># 指定inventory文件(主机定义文件)</span></span><br><span class="line">all   <span class="comment"># 表示在host文件中定义的所有的主机,可以替换成响应的组名或IP地址</span></span><br><span class="line">      <span class="comment"># 针对于主机可以使用匹配规则(所有的匹配都基于配置文件中的主机)</span></span><br><span class="line">        IP地址: ansible  192.168.239.132</span><br><span class="line">        IP匹配: ansible  192.168.239.<span class="keyword">*</span></span><br><span class="line">        IP匹配: ansible  <span class="keyword">*</span></span><br><span class="line">        组匹配: ansible 组名:&amp;hostname     <span class="variable">&lt;表示这个组跟其他组的一个主机&gt;</span></span><br><span class="line">        组匹配: ansible 组名:!hostname     <span class="variable">&lt;表示这个组但是出除去这个组的这个主机&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 类似的匹配还很多,几乎能想到的匹配都能支持,具体参照 http://docs.ansible.com/intro_patterns.html</span></span><br><span class="line">-m    <span class="comment"># 指定使用哪个模块,默认采用 command 模块</span></span><br><span class="line">-a    <span class="comment"># 指定模块的参数,每个模块都有相应的模块参数</span></span><br><span class="line">-u    <span class="comment"># 指定远端机器的用户</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看模块用法</span></span><br><span class="line">ansible-doc <span class="variable">&lt;modulename&gt;</span></span><br></pre></td></tr></table></figure>
 </span>
       
     </div>
@@ -305,7 +314,7 @@ node4(osd.2)  192.168.1.104
       
         <div class="post-tags">
           
-            <a href="/tags/Ceph/" rel="tag">#Ceph</a>
+            <a href="/tags/Ansible/" rel="tag">#Ansible</a>
           
         </div>
       
@@ -314,13 +323,11 @@ node4(osd.2)  192.168.1.104
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/09/01/sersync-deploy-on-cenots6/" rel="prev">Sersync 实现多台服务器实时同步文件</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/08/17/ceph-delpoy-on-centos6-1/" rel="next">CentOS 6.6 上部署 Ceph 集群(一)</a>
+              <a href="/2015/10/14/devops-toolbox/" rel="next">开源的 DevOps 开发工具箱</a>
             
           </div>
         </div>
@@ -335,10 +342,10 @@ node4(osd.2)  192.168.1.104
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2015/08/19/ceph-delpoy-on-centos6-2/"
-     data-title="CentOS 6.6 上部署 Ceph 集群(二)"
+        <div class="ds-share flat" data-thread-key="2015/10/20/ansible-install/"
+     data-title="Ansible 的介绍及安装部署"
      data-content=""
-     data-url="http://yoursite.com/2015/08/19/ceph-delpoy-on-centos6-2/">
+     data-url="http://yoursite.com/2015/10/20/ansible-install/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -364,8 +371,8 @@ node4(osd.2)  192.168.1.104
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/08/19/ceph-delpoy-on-centos6-2/"
-                   data-title="CentOS 6.6 上部署 Ceph 集群(二)" data-url="http://yoursite.com/2015/08/19/ceph-delpoy-on-centos6-2/">
+              <div class="ds-thread" data-thread-key="2015/10/20/ansible-install/"
+                   data-title="Ansible 的介绍及安装部署" data-url="http://yoursite.com/2015/10/20/ansible-install/">
               </div>
             
           </div>
@@ -465,7 +472,7 @@ node4(osd.2)  192.168.1.104
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展集群"><span class="nav-number">1.</span> <span class="nav-text">扩展集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_OSD"><span class="nav-number">1.1.</span> <span class="nav-text">添加 OSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_MDS"><span class="nav-number">1.2.</span> <span class="nav-text">添加 MDS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_MON"><span class="nav-number">1.3.</span> <span class="nav-text">添加 MON</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加_RGW_实例"><span class="nav-number">1.4.</span> <span class="nav-text">添加 RGW 实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、简单介绍"><span class="nav-number">1.</span> <span class="nav-text">一、简单介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、工作机制"><span class="nav-number">2.</span> <span class="nav-text">二、工作机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、Ansible_安装"><span class="nav-number">3.</span> <span class="nav-text">三、Ansible 安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境简介"><span class="nav-number">3.1.</span> <span class="nav-text">环境简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装方式"><span class="nav-number">3.2.</span> <span class="nav-text">安装方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、配置简介"><span class="nav-number">4.</span> <span class="nav-text">四、配置简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件"><span class="nav-number">4.1.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主要配置项"><span class="nav-number">4.2.</span> <span class="nav-text">主要配置项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五、常用命令"><span class="nav-number">5.</span> <span class="nav-text">五、常用命令</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
